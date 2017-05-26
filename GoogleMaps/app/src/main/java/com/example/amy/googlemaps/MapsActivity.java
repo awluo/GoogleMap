@@ -2,9 +2,12 @@ package com.example.amy.googlemaps;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,16 +52,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sanfran).title("Born here"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sanfran));
 
-        //if(checkSelfPermission(this))
-        //mMap.setMyLocationEnabled(true);
-        //mMap.addMarker(new MarkerOptions().position)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            Log.d("MyMappsApp", "Failed Permission check 1");
+            Log.d("MyMappsApp", Integer.toString(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)));
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+        }
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED){
+            Log.d("MyMapsApp", "Failed Permission check 2");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+        }
+        mMap.setMyLocationEnabled(true);
+    }
 
-        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        } else {
-            // Show rationale and request permission.
-        }*/
-
+    public void setView(View v){
+        if(mMap.getMapType()== GoogleMap.MAP_TYPE_SATELLITE)
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        else
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
     }
 }
