@@ -6,23 +6,46 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/Search_Button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Search" />
 
         <Button
             android:id="@+id/View_Button"
-            android:layout_width="match_parent"
+            android:layout_width="66dp"
             android:layout_height="wrap_content"
             android:onClick="setView"
-            android:text="Change View" />
+            android:text="View" />
+
+        <Button
+            android:id="@+id/Track_Button"
+            android:layout_width="69dp"
+            android:layout_height="wrap_content"
+            android:onClick="getLocation"
+            android:text="Track" />
+
     </LinearLayout>
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map"
     android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="375dp"
-    android:layout_height="459dp"
+    android:layout_width="388dp"
+    android:layout_height="477dp"
     tools:context="com.example.amy.googlemaps.MapsActivity" />
 
 
