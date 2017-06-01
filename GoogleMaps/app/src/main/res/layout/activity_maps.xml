@@ -30,12 +30,13 @@
             android:onClick="setView"
             android:text="View" />
 
-        <Button
-            android:id="@+id/Track_Button"
-            android:layout_width="69dp"
+        <ToggleButton
+            android:id="@+id/toggleButton"
+            android:layout_width="74dp"
             android:layout_height="wrap_content"
-            android:onClick="getLocation"
-            android:text="Track" />
+            android:checked="false"
+            android:textOff="off"
+            android:textOn="on" />
 
     </LinearLayout>
 
