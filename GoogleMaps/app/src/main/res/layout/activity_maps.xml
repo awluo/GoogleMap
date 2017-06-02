@@ -30,13 +30,13 @@
             android:onClick="setView"
             android:text="View" />
 
-        <ToggleButton
-            android:id="@+id/toggleButton"
-            android:layout_width="74dp"
+        <Button
+            android:id="@+id/Toggle_Button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="false"
-            android:textOff="off"
-            android:textOn="on" />
+            android:layout_weight="1"
+            android:onClick="trackMe"
+            android:text="Track" />
 
     </LinearLayout>
 
