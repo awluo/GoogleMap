@@ -149,7 +149,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.makeText(this, "Using GPS", Toast.LENGTH_SHORT).show();
                 }
             }
-
         } catch (Exception e) {
             Log.d("MyMapsApp", "getLocation: Caught an exeption in getLocation");
             e.printStackTrace();
@@ -216,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("MyMapsApp", "locationListenerGPS: Location changed. GPS is running.");
             Toast.makeText(getApplicationContext(), "Location changed. GPS is running.", Toast.LENGTH_SHORT).show();
             //drop a marker on the map(create a method called dropAmarker)
-            dropAmarker(location.getProvider());
+            dropAmarker("GPS");
             //disable network updates (see LocationManager API to remove updates) if gps is available
             //if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 locationManager.removeUpdates(locationListenerNetwork);
@@ -285,7 +284,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //relaunch request for network location updates (requestLocationUpdates(NETWORK_PROVIDER)
             Log.d("MyMapsApp", "onLocationChanged: Network location changed");
             Toast.makeText(getApplicationContext(), "Network location changed", Toast.LENGTH_SHORT).show();
-            dropAmarker(location.getProvider());
+            dropAmarker("Network");
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat
                     .checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
