@@ -319,8 +319,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         EditText location_text = (EditText)findViewById(R.id.Search_Text);
         String location = location_text.getText().toString();
         List<Address> addressList = null;
-        if (location != null || ! location.equals(""))
-        {
+        if (location != null || ! location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
@@ -328,11 +327,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
             Address address = addressList.get(0);
+            float[] distance = new float[1];
+
+            //Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude()
+                    //, address.getLatitude(), address.getLongitude(), distance);
+            //float dis = distance[0];
+
+            //distance[0] /=1609.34;
+            //if(distance[0] < 5*1609.34f) {
+            Toast.makeText(this, "Distance calculated", Toast.LENGTH_SHORT).show();
+            //}
+
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
 
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
-            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, MY_LOC_ZOOM_FACTOR);
-            mMap.animateCamera(update);
+            mMap.addMarker(new MarkerOptions().position(latLng).title("POI"));
+            //CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, MY_LOC_ZOOM_FACTOR);
+            //mMap.animateCamera(update);
         }
         else
         {

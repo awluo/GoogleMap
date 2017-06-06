@@ -26,7 +26,7 @@
 
         <Button
             android:id="@+id/View_Button"
-            android:layout_width="62dp"
+            android:layout_width="71dp"
             android:layout_height="wrap_content"
             android:onClick="setView"
             android:text="View" />
@@ -40,10 +40,10 @@
 
         <Button
             android:id="@+id/Clear_Button"
-            android:layout_width="73dp"
+            android:layout_width="41dp"
             android:layout_height="wrap_content"
             android:onClick="clearMarkers"
-            android:text="Clear" />
+            android:text="x" />
 
     </LinearLayout>
 
