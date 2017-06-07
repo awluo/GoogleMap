@@ -319,7 +319,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         EditText location_text = (EditText)findViewById(R.id.Search_Text);
         String location = location_text.getText().toString();
         List<Address> addressList = null;
-        if (location != null || ! location.equals("")) {
+        Toast.makeText(this, "Location entered", Toast.LENGTH_SHORT).show();
+        if (! location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
@@ -351,8 +352,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void ClearMarkers(View v)
+    public void clearMarkers(View v)
     {
+        mMap.clear();
     }
 
 }
