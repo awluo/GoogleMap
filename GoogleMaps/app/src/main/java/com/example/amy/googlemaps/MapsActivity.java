@@ -143,7 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListenerGps);
                     Log.d("MyMapsApp", "getLocation: GPS update request success");
-                    Toast.makeText(this, "Using GPS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Using GPS", Toast.LENGTH_SHORT).show();
                 }
                 if (isNetworkEnabled) {
                     Log.d("MyMapsApp", "getLocation: Network Enabled - requesting location updates");
@@ -152,7 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListenerNetwork);
                     Log.d("MyMapsApp", "getLocation: Network update request success");
-                    Toast.makeText(this, "Using GPS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Using GPS", Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (Exception e) {
@@ -316,39 +316,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void onSearch(View v)
     {
+        mMap.clear();
+        Log.d("MyMapsApp", "onSearch: map has been cleared");
         EditText location_text = (EditText)findViewById(R.id.Search_Text);
         String location = location_text.getText().toString();
         List<Address> addressList = null;
-        Toast.makeText(this, "Location entered", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Location entered", Toast.LENGTH_SHORT).show();
         if (! location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
             try {
-                addressList = geocoder.getFromLocationName(location, 1);
+                addressList = geocoder.getFromLocationName(location, 5, myLocation.getLatitude()-0.03246,
+                        myLocation.getLongitude() - 0.03332387845, myLocation.getLatitude() + 0.0324637681,
+                        myLocation.getLongitude() + 0.03332387845);
+                //addressList = geocoder.getFromLocationName(location, 5);
+                Toast.makeText(getApplicationContext(), "Address list generated", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Address address = addressList.get(0);
-            float[] distance = new float[1];
+            //Address address = addressList.get(0);
+            //float[] distance = new float[1];
+            //Location targetLocation = new Location("GPS");//provider
+            //targetLocation.setLatitude(addressList.get(0).getLatitude());
+            //targetLocation.setLongitude(addressList.get(0).getLongitude());
+            //float dist = myLocation.distanceTo(targetLocation);
 
-            //Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude()
-                    //, address.getLatitude(), address.getLongitude(), distance);
-            //float dis = distance[0];
-
-            //distance[0] /=1609.34;
-            //if(distance[0] < 5*1609.34f) {
-            Toast.makeText(this, "Distance calculated", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Distance calculated: " + dist, Toast.LENGTH_SHORT).show();
             //}
+            Location l = null;
+            for(int i = 0; i< addressList.size(); i++)
+            {
+                Address a = addressList.get(i);
+                LatLng latLng = new LatLng(a.getLatitude(), a.getLongitude());
+                //if(dist/1609.34 <= 5.0)
+                //{
+                    mMap.addMarker(new MarkerOptions().position(latLng).title("POI"));
+                //}
+            }
 
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-
-            mMap.addMarker(new MarkerOptions().position(latLng).title("POI"));
-            //CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, MY_LOC_ZOOM_FACTOR);
-            //mMap.animateCamera(update);
         }
         else
         {
             Log.d("MyMapsApp", "getSearch: empty Search Text");
-            Toast.makeText(this, "No location entered", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "No location entered", Toast.LENGTH_SHORT).show();
         }
     }
 
