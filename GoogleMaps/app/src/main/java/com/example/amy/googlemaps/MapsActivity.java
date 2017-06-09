@@ -103,8 +103,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            mMap.setMyLocationEnabled(true);
-            Log.d("MyMapsApp", "trackMe: setMyLocationEnabled = true");
+            //mMap.setMyLocationEnabled(true);
+            Log.d("MyMapsApp", "trackMe: No longer tracking.");
         }
     }
 
@@ -218,14 +218,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onLocationChanged(Location location) {
             //output message in Log.d and Toast
-            Log.d("MyMapsApp", "locationListenerGPS: Location changed. GPS is running.");
-            Toast.makeText(getApplicationContext(), "Location changed. GPS is running.", Toast.LENGTH_SHORT).show();
+            Log.d("MyMapsApp", "locationListenerGPS: GPS location has changed.");
+            Toast.makeText(getApplicationContext(), "GPS location has changed. ", Toast.LENGTH_SHORT).show();
             //drop a marker on the map(create a method called dropAmarker)
             dropAmarker("GPS");
             //disable network updates (see LocationManager API to remove updates) if gps is available
-            //if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.removeUpdates(locationListenerNetwork);
-            //}
+            locationManager.removeUpdates(locationListenerNetwork);
         }
 
         @Override
@@ -316,8 +314,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void onSearch(View v)
     {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mMap.clear();
         Log.d("MyMapsApp", "onSearch: map has been cleared");
+
         EditText location_text = (EditText)findViewById(R.id.Search_Text);
         String location = location_text.getText().toString();
         List<Address> addressList = null;
@@ -328,35 +328,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
+            myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (myLocation == null)
+            {
+                Log.d ("MyMapsApp", "GPS loc null, now network");
+                myLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+
             try {
+                Log.d("MyMapsApp", "onSearch: getting addresses");
+                Log.d("MyMapsApp", "onSearch: my location" + myLocation.getLongitude());
+                Toast.makeText(getApplicationContext(), "getting addresses", Toast.LENGTH_SHORT).show();
                 addressList = geocoder.getFromLocationName(location, 5, myLocation.getLatitude()-0.03246,
                         myLocation.getLongitude() - 0.03332387845, myLocation.getLatitude() + 0.0324637681,
                         myLocation.getLongitude() + 0.03332387845);
-                //addressList = geocoder.getFromLocationName(location, 5);
-                Toast.makeText(getApplicationContext(), "Address list generated", Toast.LENGTH_SHORT).show();
+                Log.d("MyMapsApp", "onSearch: address list generated");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //Address address = addressList.get(0);
-            //float[] distance = new float[1];
-            //Location targetLocation = new Location("GPS");//provider
-            //targetLocation.setLatitude(addressList.get(0).getLatitude());
-            //targetLocation.setLongitude(addressList.get(0).getLongitude());
-            //float dist = myLocation.distanceTo(targetLocation);
 
-            //Toast.makeText(getApplicationContext(), "Distance calculated: " + dist, Toast.LENGTH_SHORT).show();
-            //}
-            Location l = null;
-            for(int i = 0; i< addressList.size(); i++)
-            {
-                Address a = addressList.get(i);
-                LatLng latLng = new LatLng(a.getLatitude(), a.getLongitude());
-                //if(dist/1609.34 <= 5.0)
-                //{
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("POI"));
-                //}
+            Toast.makeText(getApplicationContext(), "Finding POI within 5 mi", Toast.LENGTH_SHORT).show();
+            for(int i = 0; i < addressList.size(); i++) {
+                Address address = addressList.get(i);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+
             }
+            LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 10.0f);
 
+            mMap.animateCamera(update);
+            Log.d("MyMapsApp", "onSearch: Places found");
         }
         else
         {
@@ -367,7 +369,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void clearMarkers(View v)
     {
+
+        Log.d("MyMapsApp", "clearMarkers: clearing Markers");
         mMap.clear();
+        Toast.makeText(getApplicationContext(), "Markers cleared", Toast.LENGTH_SHORT).show();
     }
 
 }
