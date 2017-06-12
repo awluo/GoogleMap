@@ -44,7 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final long MIN_TIME_BW_UPDATES = 1000 * 15;
     private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 5.0f;
     private Location myLocation;
-    private static final float MY_LOC_ZOOM_FACTOR = 15f;
+    private static final float MY_LOC_ZOOM_FACTOR = 20f;
 
 
     @Override
@@ -73,7 +73,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LatLng sanfran = new LatLng(37.77, -122.43);
         mMap.addMarker(new MarkerOptions().position(sanfran).title("Born here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sanfran));
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d("MyMapsApp", "Failed Permission check 1");
@@ -85,11 +84,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("MyMapsApp", "Failed Permission check 2");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
         }
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
     }
 
     public void trackMe(View v) {
-        if (!(isGPSenabled && isNetworkEnabled)) {
+        if (!(isGPSenabled || isNetworkEnabled)) {
             Log.d("MyMapsApp", "trackMe: calling getLocation");
             getLocation(v);
             Log.d("MyMapsApp", "trackMe: called getLocation");
@@ -99,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("MyMapsApp", "trackMe: removed GPS updates");
             locationManager.removeUpdates(locationListenerNetwork);
             Log.d("MyMapsApp", "trackMe: removed Network updates");
+            Toast.makeText(getApplicationContext(), "No longer tracking", Toast.LENGTH_SHORT).show();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -152,7 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListenerNetwork);
                     Log.d("MyMapsApp", "getLocation: Network update request success");
-                    Toast.makeText(getApplicationContext(), "Using GPS", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Using Network", Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (Exception e) {
@@ -193,8 +193,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Circle circle = mMap.addCircle(new CircleOptions()
                         .center(userLocation)
                         .radius(1.5)
-                        .strokeColor(Color.GREEN)
-                        .fillColor(Color.GREEN));
+                        .strokeColor(Color.RED)
+                        .fillColor(Color.RED));
                 Log.d("MyMapsApp", "dropAMarker: Network Marker added!");
             } else {
                 myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -242,7 +242,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // TODO: Consider calling
                         return;
                     }
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListenerGps);
@@ -254,7 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // TODO: Consider calling
                         return;
                     }
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListenerGps);
@@ -266,7 +266,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // TODO: Consider calling
                         return;
                     }
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             locationListenerGps);
@@ -342,16 +342,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 addressList = geocoder.getFromLocationName(location, 5, myLocation.getLatitude()-0.03246,
                         myLocation.getLongitude() - 0.03332387845, myLocation.getLatitude() + 0.0324637681,
                         myLocation.getLongitude() + 0.03332387845);
+                //addressList = geocoder.getFromLocationName(location, 200);
                 Log.d("MyMapsApp", "onSearch: address list generated");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            Toast.makeText(getApplicationContext(), "Finding POI within 5 mi", Toast.LENGTH_SHORT).show();
             for(int i = 0; i < addressList.size(); i++) {
                 Address address = addressList.get(i);
                 LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                /*if (Math.abs(address.getLatitude() - myLocation.getLatitude()) <= (5 * 0.01666) && Math.abs(address.getLatitude() - myLocation.getLatitude()) <= 5 * 0.01666) {
+                    {
+                        LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                    }
+                }*/
 
             }
             LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
@@ -369,7 +375,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void clearMarkers(View v)
     {
-
         Log.d("MyMapsApp", "clearMarkers: clearing Markers");
         mMap.clear();
         Toast.makeText(getApplicationContext(), "Markers cleared", Toast.LENGTH_SHORT).show();
